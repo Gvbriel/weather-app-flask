@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+Current weather - search
+{% endblock %}
+
+
+
+{% block content %}
+<div class="mx-auto" style="width: 500px;">
+    <form action="#" method="post">
+        <label>Insert city name:</label>
+        <br>
+        <input type="text" name="cityname" value="">
+        <br>
+        <label>Insert country:</label>
+        <br>
+        <input type="text" name="countryname" value="">
+        <input type="submit" value="search" name="submit">
+    </form>
+    {% if display == True %}
+        <div>
+            <p> {{ city.city }} </p>
+            <img src="{{ url_for('static', filename='icons/cloudy.svg')}}" alt="sun" style="width: 100px; height: 100px"/>
+            <p>{{ city.info[0] }}</p>
+            <p>{{ city.info[1] }} °C </p>
+            <p>{{ city.info[2] }} km\h</p>
+            <p>{{ city.info[3] }} km\h</p>
+        </div>
+
+    {% endif %}
+</div>
+
+{% endblock %}

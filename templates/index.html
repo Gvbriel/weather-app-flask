@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}
+Current weather
+{% endblock %}
+
+{%block script%}
+  <script>
+    
+    const clocks = document.getElementsByClassName("clock");
+
+    function updateClocks() {
+      for (let clock of clocks) {
+        let timezone = clock.dataset.timezone;
+        let time = new Date().toLocaleTimeString("en-US", {
+          hour: '2-digit',
+          minute:'2-digit',
+          timeZone: timezone
+        });
+        clock.textContent = time;
+        console.log("Hello");
+      }
+    }
+
+    // Update every minute:
+    setInterval(updateClocks, 1);
+    updateClocks();
+
+    </script>
+{%endblock%}
+
+
+{% block content %}
+
+
+<div class="mx-auto" style="width: 1200px; margin: 20px;">
+    
+  
+    {% for city in cities %}
+    <div class="card" style="height: auto; width: 10rem; float: left; margin: 10px; text-align:  center; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
+        <img style="margin: auto; padding: auto;"   class="card-img-top" src="{{ url_for('static', filename = city.image )}}" alt="Card image cap">
+        <div class="card-body" style="text-align:  center;">
+          <h5 class="card-title" style="margin: 0;"> {{ city.city }}</h5>
+          <p style="font-size: 12px; margin: 4px;"> {{city.country}}</p>
+          <div><span class="clock" style="font-family: sans-serif; padding: 5px;" data-timezone='{{city.timezone}}'></span></div>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">{{city.info[0]}}</li>
+          <li class="list-group-item">{{city.info[1]}} °C</li>
+          <li class="list-group-item">Wind: {{city.info[2]}} km\h</li>
+        </ul>
+      </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
