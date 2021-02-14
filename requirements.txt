@@ -33,7 +33,7 @@ lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 packaging==20.9
-pandas==1.2.2
+pandas==1.1.5
 Pillow==8.1.0
 pipenv==2020.11.15
 pipreqs==0.4.10
