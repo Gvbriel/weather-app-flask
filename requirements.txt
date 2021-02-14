@@ -44,7 +44,7 @@ pycountry==20.7.3
 pycountry-convert==0.7.2
 pylint==2.6.0
 pylodstorage==0.0.26
-pyowm==3.1.1
+pyowm==2.10.0
 pyparsing==2.4.7
 PySocks==1.7.1
 pytest==6.2.2
