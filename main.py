@@ -35,24 +35,24 @@ def setImage(Weather):
         if search("night", status) or search("sky", status):
             return 'https://svgshare.com/i/U2C.svg'
         elif search("few clouds", status) or search("clouds", status):
-            return basepath + 'cloudy-night-1.svg'
+            return 'https://svgshare.com/i/U21.svg'
     elif time >= 6 and time <= 21:
         if search("clouds", status):
-            return basepath + 'cloudy.svg'
+            return 'https://svgshare.com/i/U2D.svg'
         elif search("few clouds", status) or search("scattered clouds", status):
-            return basepath + 'small-clouds.svg'
+            return 'https://svgshare.com/i/U2d.svg'
         elif search("sun", status) or search("sky", status):
             return 'https://svgshare.com/i/U1X.svg'
         elif search("haze", status) or search("mist", status) or search("smoke", status):
-            return basepath + 'haze.svg'
+            return 'https://svgshare.com/i/U04.svg'
         elif search("light rain", status):
-            return basepath + "rain.svg"
+            return "https://svgshare.com/i/U0b.svg"
         elif search("rain", status) or search("moderate rain", status):
-            return basepath + "raining.svg"
+            return "https://svgshare.com/i/U34.svg"
         elif search("snow", status):
-            return basepath + "snowylight-day.svg"
+            return "https://svgshare.com/i/U0a.svg"
         else:
-            return basepath + 'sun.svg'
+            return 'https://svgshare.com/i/U1X.svg'
     
 def continentName(Weather):
     countryalpha = pc.country_name_to_country_alpha2(Weather.country, cn_name_format="default")
