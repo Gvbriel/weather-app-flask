@@ -7,6 +7,7 @@ Current weather
   <script>
     
     const clocks = document.getElementsByClassName("clock");
+    var intervalI;
 
     function updateClocks() {
       for (let clock of clocks) {
@@ -20,9 +21,14 @@ Current weather
       }
     }
 
-    // Update every minute:
-    setInterval(updateClocks, 1);
-    updateClocks();
+    function updateTime() {
+        intervalI = setInterval(updateClocks, 6000);
+    }
+
+    updateTime(); 
+    //Update every minute:
+    //setInterval(updateClocks, 6000);
+    
 
     </script>
 {%endblock%}
