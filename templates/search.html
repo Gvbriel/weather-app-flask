@@ -7,16 +7,16 @@ Current weather - search
 
 
 {% block content %}
-<div class="mx-auto" style="width: 500px;">
-    <form action="#" method="post">
+<div class="mx-auto container" style="">
+    <form action="#" method="post" style="display:flex;">
         <label>Insert city name:</label>
         <br>
         <input type="text" name="cityname" value="">
         <br>
-        <label>Insert country:</label>
-        <br>
-        <input type="text" name="countryname" value="">
-        <input type="submit" value="search" name="submit">
+            <label>Insert country:</label>
+            <br>
+            <input type="text" name="countryname" value="">
+            <input type="submit" value="search" name="submit">
     </form>
     {% if display == True %}
         <div>
