@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request
 from pytz import timezone
 from datetime import datetime, timedelta
-from re import search
+import re
 from geopy.geocoders import Nominatim
 from tzwhere import tzwhere
 import pycountry_convert as pc
@@ -27,29 +27,28 @@ geolocator = Nominatim(user_agent='gvbplk')
 
 
 def setImage(Weather):
-    basepath = 'icons/'
     status = Weather.info[0]
     time = Weather.time
     
     if time < 6 or time > 21:
-        if search("night", status) or search("sky", status):
+        if re.search("night", status) or re.search("sky", status):
             return 'https://svgshare.com/i/U2C.svg'
-        elif search("few clouds", status) or search("clouds", status):
+        elif re.search("few clouds", status) or re.search("clouds", status):
             return 'https://svgshare.com/i/U21.svg'
     elif time >= 6 and time <= 21:
-        if search("clouds", status):
+        if re.search("clouds", status):
             return 'https://svgshare.com/i/U2D.svg'
-        elif search("few clouds", status) or search("scattered clouds", status):
+        elif re.search("few clouds", status) or re.search("scattered clouds", status):
             return 'https://svgshare.com/i/U2d.svg'
-        elif search("sun", status) or search("sky", status):
+        elif re.search("sun", status) or re.search("sky", status):
             return 'https://svgshare.com/i/U1X.svg'
-        elif search("haze", status) or search("mist", status) or search("smoke", status):
+        elif re.search("haze", status) or re.search("mist", status) or re.search("smoke", status):
             return 'https://svgshare.com/i/U04.svg'
-        elif search("light rain", status):
+        elif re.search("light rain", status):
             return "https://svgshare.com/i/U0b.svg"
-        elif search("rain", status) or search("moderate rain", status):
+        elif re.search("rain", status) or re.search("moderate rain", status):
             return "https://svgshare.com/i/U34.svg"
-        elif search("snow", status):
+        elif re.search("snow", status):
             return "https://svgshare.com/i/U0a.svg"
         else:
             return 'https://svgshare.com/i/U1X.svg'
@@ -60,11 +59,11 @@ def continentName(Weather):
     continent = pc.convert_continent_code_to_continent_name(countrycode)
     return str(continent)
 
-def checkUS(Weather):
-    if search("America", Weather.continent):
+def checkUS(continent):
+    if "America" in continent:
         return "America"
     else:
-        return Weather.continent
+        return continent
 
 
 #add hour in the city
@@ -73,7 +72,6 @@ class Weather:
     def __init__(self, city, country):
         self.info = []
         self.city = str(city)
-        
         self.country = str(country)
         self.place = wthmgr.weather_at_place(self.city + ', ' + self.country)
         
@@ -84,7 +82,7 @@ class Weather:
         self.latitude = geolocator.geocode(self.city + ','+ self.country).latitude
         self.longitude = geolocator.geocode(self.city + ','+ self.country).longitude
         self.continent = continentName(self)
-        self.continent = checkUS(self)
+        self.continent = checkUS(self.continent)
         self.citySpace = self.city.replace(' ', '_')
         self.timezone = self.continent + '/' + self.citySpace
         self.zone = pytz.timezone(self.timezone)
@@ -92,6 +90,8 @@ class Weather:
         self.image = str(setImage(self))
         
    
+Lublin = wthmgr.weather_at_place('Lublin')
+pogoda = Lublin.weather
 
 Warsaw = Weather('Warsaw', 'Poland')
 Tokyo = Weather('Tokyo', 'Japan')
@@ -111,10 +111,10 @@ citieslist = [Warsaw, Amsterdam, Tokyo, Shanghai, NewYork, BuenosAires, LosAngel
 
 @app.route('/index.html')
 def index():
-    #print(NewYork.time, file = sys.stderr)
+    print(pogoda, file = sys.stderr)
     return render_template("index.html", cities = citieslist)
 
-@app.route('/search.html', methods = ['POST','GET'])
+@app.route('/search.html', methods = ["POST","GET"])
 def search():
     if request.method == "POST":
         cityInput = request.form["cityname"]
@@ -122,10 +122,14 @@ def search():
         cityInput = str(cityInput)
         countryInput = str(countryInput)
         cityInfo = Weather(cityInput, countryInput)
-        #print(cityInfo, file = sys.stderr)
+        print(cityInfo, file = sys.stderr)
         return render_template("search.html", display = True, city = cityInfo)
     else:
-        return render_template("search.html", display = False, city = "Warsaw")
+        return render_template("search.html", display = False, city = Warsaw)
+
+@app.route('/<city>')
+def city():
+    return render_template("city.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
