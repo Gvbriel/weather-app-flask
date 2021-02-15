@@ -109,12 +109,12 @@ Moscow = Weather('Moscow', 'Russia')
 
 citieslist = [Warsaw, Amsterdam, Tokyo, Shanghai, NewYork, BuenosAires, LosAngeles, Paris, Bangkok, Madrid, Manila, Moscow]
 
-@app.route('/')
+@app.route('/index.html')
 def index():
     #print(NewYork.time, file = sys.stderr)
     return render_template("index.html", cities = citieslist)
 
-@app.route('/search.html', methods=['POST'])
+@app.route('/search.html', methods = ['POST','GET'])
 def search():
     if request.method == "POST":
         cityInput = request.form["cityname"]
