@@ -27,7 +27,7 @@ geolocator = Nominatim(user_agent='gvbplk')
 
 
 def setImage(Weather):
-    basepath = '/icons/'
+    basepath = '/static/icons/'
     status = Weather.info[0]
     time = Weather.time
     
