@@ -37,7 +37,7 @@ Current weather
   
     {% for city in cities %}
     <div class="card" style="height: auto; width: 10rem; float: left; margin: 10px; text-align:  center; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
-        <img style="margin: auto; padding: auto;"   class="card-img-top" src="{{ url_for('static', filename = city.image )}}" alt="Card image cap">
+        <img style="margin: auto; padding: auto;"   class="card-img-top" src={{city.image}} alt="Card image cap">
         <div class="card-body" style="text-align:  center;">
           <h5 class="card-title" style="margin: 0;"> {{ city.city }}</h5>
           <p style="font-size: 12px; margin: 4px;"> {{city.country}}</p>

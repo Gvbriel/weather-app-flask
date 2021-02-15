@@ -33,7 +33,7 @@ def setImage(Weather):
     
     if time < 6 or time > 21:
         if search("night", status) or search("sky", status):
-            return basepath + 'night.svg'
+            return 'https://svgshare.com/i/U2C.svg'
         elif search("few clouds", status) or search("clouds", status):
             return basepath + 'cloudy-night-1.svg'
     elif time >= 6 and time <= 21:
@@ -42,7 +42,7 @@ def setImage(Weather):
         elif search("few clouds", status) or search("scattered clouds", status):
             return basepath + 'small-clouds.svg'
         elif search("sun", status) or search("sky", status):
-            return basepath + 'day.svg'
+            return 'https://svgshare.com/i/U1X.svg'
         elif search("haze", status) or search("mist", status) or search("smoke", status):
             return basepath + 'haze.svg'
         elif search("light rain", status):
