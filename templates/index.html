@@ -22,10 +22,10 @@ Current weather
     }
 
     function updateTime() {
-        intervalI = setInterval(updateClocks, 6000);
+      updateClocks();
+      intervalI = setInterval(updateClocks, 6000);
     }
 
-    updateTime(); 
     //Update every minute:
     //setInterval(updateClocks, 6000);
     
