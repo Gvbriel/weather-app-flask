@@ -27,7 +27,7 @@ geolocator = Nominatim(user_agent='gvbplk')
 
 
 def setImage(Weather):
-    basepath = 'icons/'
+    basepath = '/icons/'
     status = Weather.info[0]
     time = Weather.time
     
@@ -109,7 +109,7 @@ Moscow = Weather('Moscow', 'Russia')
 
 citieslist = [Warsaw, Amsterdam, Tokyo, Shanghai, NewYork, BuenosAires, LosAngeles, Paris, Bangkok, Madrid, Manila, Moscow]
 
-@app.route('/index.html')
+@app.route('/')
 def index():
     #print(NewYork.time, file = sys.stderr)
     return render_template("index.html", cities = citieslist)
