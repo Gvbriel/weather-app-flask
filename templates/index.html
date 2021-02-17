@@ -41,7 +41,8 @@ Current weather
     
   
     {% for city in cities %}
-    <div class="card" style="height: auto; width: 10rem; float: left; margin: 10px; text-align:  center; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
+    <a href={{url_for('city', city = city.city, country = city.country)}}>
+      <div class="card" style="height: auto; width: 10rem; float: left; margin: 10px; text-align:  center; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
         <img style="margin: auto; padding: auto;"   class="card-img-top" src={{city.image}} alt="Card image cap">
         <div class="card-body" style="text-align:  center;">
           <h5 class="card-title" style="margin: 0;"> {{ city.city }}</h5>
@@ -49,11 +50,12 @@ Current weather
           <div><span class="clock" style="font-family: sans-serif; padding: 5px;" data-timezone='{{city.timezone}}'></span></div>
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">{{city.info[0]}}</li>
-          <li class="list-group-item">{{city.info[1]}} °C</li>
-          <li class="list-group-item">Wind: {{city.info[2]}} km\h</li>
+          <li class="list-group-item">{{city.status}}</li>
+          <li class="list-group-item">{{city.temp}} °C</li>
+          <li class="list-group-item">Wind: {{city.wind}} km\h</li>
         </ul>
       </div>
+    </a>
     {% endfor %}
 </div>
 

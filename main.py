@@ -1,11 +1,10 @@
 from flask import Flask, redirect, url_for, render_template, request
 from pytz import timezone
 from datetime import datetime, timedelta
-import re
 from geopy.geocoders import Nominatim
 from tzwhere import tzwhere
 import pycountry_convert as pc
-
+import re
 import pyowm
 import configparser
 import pytz
@@ -27,7 +26,7 @@ geolocator = Nominatim(user_agent='gvbplk')
 
 
 def setImage(Weather):
-    status = Weather.info[0]
+    status = str(Weather.status)
     time = Weather.time
     
     if time < 6 or time > 21:
@@ -35,6 +34,10 @@ def setImage(Weather):
             return 'https://svgshare.com/i/U2C.svg'
         elif re.search("few clouds", status) or re.search("clouds", status):
             return 'https://svgshare.com/i/U21.svg'
+        elif re.search("rain" , status):
+            return 'https://svgshare.com/i/U34.svg'
+        elif re.search("mist" , status) or re.search("haze" , status) or re.search("smoke", status):
+            return 'https://svgshare.com/i/U5G.svg'
     elif time >= 6 and time <= 21:
         if re.search("clouds", status):
             return 'https://svgshare.com/i/U2D.svg'
@@ -66,28 +69,45 @@ def checkUS(continent):
         return continent
 
 
-#add hour in the city
+class WeatherAtCity:
+    def __init__(self, city):
+        self.city = city
+        self.place = wthmgr.weather_at_place(self.city)
+        self.status = self.place.weather.detailed_status
+        self.temp = int(round(self.place.weather.temperature('celsius')['temp'],1))
+        self.wind = round(self.place.weather.wind('km_hour')['speed'],2)
+        self.image = setImage(self)
+
+
+
 class Weather:
     
     def __init__(self, city, country):
         self.info = []
-        self.city = str(city)
-        self.country = str(country)
+        self.city = city
+        self.country = country
         self.place = wthmgr.weather_at_place(self.city + ', ' + self.country)
+
+        self.status = self.place.weather.detailed_status
+        self.temp = int(round(self.place.weather.temperature('celsius')['temp'],1))
+        self.wind = round(self.place.weather.wind('km_hour')['speed'],2)
+        self.pressure = self.place.weather.pressure['press']
+        self.sunrise = self.place.weather.sunrise_time(timeformat="date")
+        self.sunset = self.place.weather.sunset_time(timeformat="date")
+
         
-        self.info.append(str(self.place.weather.detailed_status))
-        self.info.append(int(round(self.place.weather.temperature('celsius')['temp'],1)))
-        self.info.append(round(self.place.weather.wind('km_hour')['speed'],2))
-        
-        self.latitude = geolocator.geocode(self.city + ','+ self.country).latitude
-        self.longitude = geolocator.geocode(self.city + ','+ self.country).longitude
+        #self.latitude = geolocator.geocode(self.city + ','+ self.country).latitude
+        #self.longitude = geolocator.geocode(self.city + ','+ self.country).longitude
+
         self.continent = continentName(self)
         self.continent = checkUS(self.continent)
         self.citySpace = self.city.replace(' ', '_')
         self.timezone = self.continent + '/' + self.citySpace
         self.zone = pytz.timezone(self.timezone)
         self.time = int(datetime.now(self.zone).hour)
-        self.image = str(setImage(self))
+        self.image = setImage(self)
+        self.sunrise = self.sunrise.replace(tzinfo=pytz.utc).astimezone(self.zone)
+        self.sunset = self.sunset.replace(tzinfo=pytz.utc).astimezone(self.zone)
         
    
 Lublin = wthmgr.weather_at_place('Lublin')
@@ -97,7 +117,6 @@ Warsaw = Weather('Warsaw', 'Poland')
 Tokyo = Weather('Tokyo', 'Japan')
 Amsterdam = Weather('Amsterdam', 'Netherlands')
 Shanghai = Weather('Shanghai', 'China')
-SaoPaulo = Weather('Sao Paulo', 'Brazil')
 NewYork = Weather('New York', 'United States')
 BuenosAires = Weather('Buenos Aires', 'Argentina')
 LosAngeles = Weather('Los Angeles', 'United States')
@@ -107,11 +126,12 @@ Madrid = Weather('Madrid', 'Spain')
 Manila = Weather('Manila', 'Philippines')
 Moscow = Weather('Moscow', 'Russia')
 
-citieslist = [Warsaw, Amsterdam, Tokyo, Shanghai, NewYork, BuenosAires, LosAngeles, Paris, Bangkok, Madrid, Manila, Moscow]
+citieslist = [Warsaw, Amsterdam, NewYork, Tokyo, Shanghai, BuenosAires, LosAngeles, Paris, Bangkok, Madrid, Manila, Moscow]
 
 @app.route('/index.html')
 def index():
-    print(pogoda, file = sys.stderr)
+    print(LosAngeles.sunrise, file = sys.stderr)
+    print(LosAngeles.sunset, file = sys.stderr)
     return render_template("index.html", cities = citieslist)
 
 @app.route('/search.html', methods = ["POST","GET"])
@@ -127,9 +147,13 @@ def search():
     else:
         return render_template("search.html", display = False, city = Warsaw)
 
-@app.route('/<city>')
+@app.route('/city.html')
 def city():
-    return render_template("city.html")
+    cityC = request.args.get('city')
+    countryC = request.args.get('country')
+    city = Weather(cityC, countryC)
+    print(city, file = sys.stderr)
+    return render_template("city.html", city = city)
 
 if __name__ == "__main__":
     app.run(debug=True)

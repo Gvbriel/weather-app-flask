@@ -1,12 +1,57 @@
-{% extends base.html %}
+{% extends "base.html" %}
 
 {% block title %}
-    {{city.name}}
+
 {% endblock %}
 
 {% block script %}
+<script>
+        
+    const clocks = document.getElementsByClassName("clock");
+    var intervalI;
+
+    function updateClocks() {
+      for (let clock of clocks) {
+        let timezone = clock.dataset.timezone;
+        let time = new Date().toLocaleTimeString("en-US", {
+          hour: '2-digit',
+          minute:'2-digit',
+          timeZone: timezone
+        });
+        clock.textContent = time;
+      }
+    }
+
+    function updateTime() {
+      updateClocks();
+      intervalI = setInterval(updateClocks, 6000);
+    }
+
+    updateTime();
+
+    </script>
 {% endblock %}
 
 {% block content %}
+
+<div class="card"  style="margin:20px; text-align:center;">
     
+    <div class="card-header">
+    <img style="margin: auto; padding: auto; height:100px; width: 100px;"   class="card-img-top" src={{city.image}} alt="Card image cap">
+      <h5>{{city.city}}</h5>
+      <p style="margin-bottom: 5px;">{{city.country}}</p>
+      <div><span class="clock" style="font-family: sans-serif; margin: 0;" data-timezone='{{city.timezone}}'></span></div>
+    </div>
+    <div class="card-body">
+        <p>Current status: {{city.status}}</p>
+        <p>Temperature: {{city.temp}} °C</p>
+        <p>Wind speed: {{city.wind}} km/h</p>
+        <p>Sunrise at {{city.sunrise.hour}}:{{city.sunrise.minute}}, sunset at {{city.sunset.hour}}:{{city.sunset.minute}}</p>
+
+      </blockquote>
+    </div>
+
+</div>
+  
+
 {% endblock %}

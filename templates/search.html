@@ -43,7 +43,9 @@ Current weather - search
             <label>Insert country:</label>
             <br>
             <input type="text" name="countryname" value="">
-            <input type="submit" value="search" name="submit">
+            <a href={{url_for('city', city = cityname)}}>
+              <input type="submit" value="search" name="submit">
+            </a>
     </form>
     {% if display == True %}
     <div class="card" style="height: auto; width: 10rem; float: left; margin: 10px; text-align:  center; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
@@ -54,9 +56,9 @@ Current weather - search
           <div><span class="clock" style="font-family: sans-serif; padding: 5px;" data-timezone='{{city.timezone}}'></span></div>
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">{{city.info[0]}}</li>
-          <li class="list-group-item">{{city.info[1]}} °C</li>
-          <li class="list-group-item">Wind: {{city.info[2]}} km\h</li>
+          <li class="list-group-item">{{city.status}}</li>
+          <li class="list-group-item">{{city.temp}} °C</li>
+          <li class="list-group-item">Wind: {{city.wind}} km\h</li>
         </ul>
       </div>
 
