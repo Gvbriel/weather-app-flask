@@ -1,8 +1,17 @@
-from flask import Flask, redirect, url_for, render_template, request
+from flask import Flask, redirect, url_for, render_template, request, Response
 from pytz import timezone
 from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
 from tzwhere import tzwhere
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+from matplotlib.figure import Figure
+import matplotlib
+import io
+from base64 import b64encode
+import base64
+
 import pycountry_convert as pc
 import re
 import pyowm
@@ -14,6 +23,10 @@ import sys
 
 app = Flask(__name__)
 
+#set backend to non-interactive one; without it I get error about not running matplotlib in main thread
+matplotlib.use('agg')
+
+#get api key from ini file
 def get_api_key():
     config = configparser.ConfigParser()
     config.read('config.ini')
@@ -56,17 +69,32 @@ def setImage(Weather):
         else:
             return 'https://svgshare.com/i/U1X.svg'
     
+
 def continentName(Weather):
     countryalpha = pc.country_name_to_country_alpha2(Weather.country, cn_name_format="default")
     countrycode = pc.country_alpha2_to_continent_code(countryalpha)
     continent = pc.convert_continent_code_to_continent_name(countrycode)
     return str(continent)
 
+
 def checkUS(continent):
     if "America" in continent:
         return "America"
     else:
         return continent
+
+def createPlot(Weather):
+    tempMax = Weather.forecastTempMax
+    tempMin = Weather.forecastTempMin
+    dates = Weather.forecastDates
+
+    plt.plot(tempMax, dates, label="Max day temperature")
+    plt.plot(tempMin, dates, label="Min day temperature")
+    plt.ylabel('Temperature')
+    plt.xlabel('Dates')
+    plt.title('7 days forecast')
+
+    plt.savefig(Weather.city + '.png')
 
 
 class WeatherAtCity:
@@ -83,7 +111,9 @@ class WeatherAtCity:
 class Weather:
     
     def __init__(self, city, country):
-        self.info = []
+        self.forecastTempMax = []
+        self.forecastTempMin = []
+        self.forecastDates = []
         self.city = city
         self.country = country
         self.place = wthmgr.weather_at_place(self.city + ', ' + self.country)
@@ -94,11 +124,15 @@ class Weather:
         self.pressure = self.place.weather.pressure['press']
         self.sunrise = self.place.weather.sunrise_time(timeformat="date")
         self.sunset = self.place.weather.sunset_time(timeformat="date")
-
+        self.tempDif = self.place.weather.temperature('celsius')
+        self.tempMax = round(self.tempDif['temp_max'],1)
+        self.tempMin = round(self.tempDif['temp_min'],1)
+       
         
-        #self.latitude = geolocator.geocode(self.city + ','+ self.country).latitude
-        #self.longitude = geolocator.geocode(self.city + ','+ self.country).longitude
+        self.lat = geolocator.geocode(self.city + ','+ self.country).latitude
+        self.long = geolocator.geocode(self.city + ','+ self.country).longitude
 
+        self.forecastDaily = wthmgr.one_call(self.lat, self.long).forecast_daily
         self.continent = continentName(self)
         self.continent = checkUS(self.continent)
         self.citySpace = self.city.replace(' ', '_')
@@ -108,10 +142,17 @@ class Weather:
         self.image = setImage(self)
         self.sunrise = self.sunrise.replace(tzinfo=pytz.utc).astimezone(self.zone)
         self.sunset = self.sunset.replace(tzinfo=pytz.utc).astimezone(self.zone)
-        
-   
-Lublin = wthmgr.weather_at_place('Lublin')
-pogoda = Lublin.weather
+        self.longTermForecast()
+
+    def longTermForecast(self):
+        for weather in self.forecastDaily:
+            self.forecastTempMax.append(round(float(weather.temperature('celsius').get('max')),1))
+            self.forecastTempMin.append(round(float(weather.temperature('celsius').get('min')),1))
+            day = datetime.utcfromtimestamp(weather.reference_time())
+            date = day.date()
+            self.forecastDates.append(date.strftime("%m-%d"))
+
+
 
 Warsaw = Weather('Warsaw', 'Poland')
 Tokyo = Weather('Tokyo', 'Japan')
@@ -130,8 +171,8 @@ citieslist = [Warsaw, Amsterdam, NewYork, Tokyo, Shanghai, BuenosAires, LosAngel
 
 @app.route('/index.html')
 def index():
-    print(LosAngeles.sunrise, file = sys.stderr)
-    print(LosAngeles.sunset, file = sys.stderr)
+    print(Warsaw.forecastTempMin, file = sys.stderr)
+    print(Warsaw.forecastTempMax, file = sys.stderr)
     return render_template("index.html", cities = citieslist)
 
 @app.route('/search.html', methods = ["POST","GET"])
@@ -152,8 +193,37 @@ def city():
     cityC = request.args.get('city')
     countryC = request.args.get('country')
     city = Weather(cityC, countryC)
+
+    tempMax = city.forecastTempMax
+    tempMin = city.forecastTempMin
+    dates = city.forecastDates
+
+    img = io.BytesIO()
+
+    #plt.xkcd()
+
+    plt.plot(dates, tempMax, color='b',marker='o', label="Max day temperature")
+    plt.plot(dates, tempMin, color='k',marker='o', label="Min day temperature")
+    plt.ylabel('Temperature')
+    plt.xlabel('Dates')
+    plt.title('7 days forecast')
+
+    axes = plt.gca()
+    axes.set_ylim([min(tempMin)-5, max(tempMax)+5])
+
+    for i,j in zip(dates,tempMin):
+        axes.annotate(str(j),xy=(i,j+1))
+
+    for i,j in zip(dates,tempMax):
+        axes.annotate(str(j),xy=(i,j+1))
+
+    plt.savefig(img, format='png')
+    img.seek(0)
+
+    plot_url = base64.b64encode(img.getvalue()).decode()
+
     print(city, file = sys.stderr)
-    return render_template("city.html", city = city)
+    return render_template("city.html", city = city, url = plot_url)
 
 if __name__ == "__main__":
     app.run(debug=True)
