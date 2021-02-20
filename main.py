@@ -200,8 +200,9 @@ def city():
 
     img = io.BytesIO()
 
+    plt.clf()
     #plt.xkcd()
-
+    #make dashed line
     plt.plot(dates, tempMax, color='b',marker='o', label="Max day temperature")
     plt.plot(dates, tempMin, color='k',marker='o', label="Min day temperature")
     plt.ylabel('Temperature')
