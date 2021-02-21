@@ -1,64 +1,83 @@
-{% extends "base.html" %}
-
-{% block title %}
-
-{% endblock %}
-
-{% block script %}
+{% extends "base.html" %} {% block title %} {% endblock %} {% block script %}
 <script>
-        
-    const clocks = document.getElementsByClassName("clock");
-    var intervalI;
+  const clocks = document.getElementsByClassName("clock");
+  var intervalI;
 
-    function updateClocks() {
-      for (let clock of clocks) {
-        let timezone = clock.dataset.timezone;
-        let time = new Date().toLocaleTimeString("en-US", {
-          hour: '2-digit',
-          minute:'2-digit',
-          timeZone: timezone
-        });
-        clock.textContent = time;
-      }
+  function updateClocks() {
+    for (let clock of clocks) {
+      let timezone = clock.dataset.timezone;
+      let time = new Date().toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: timezone,
+      });
+      clock.textContent = time;
     }
+  }
 
-    function updateTime() {
-      updateClocks();
-      intervalI = setInterval(updateClocks, 6000);
-    }
+  function updateTime() {
+    updateClocks();
+    intervalI = setInterval(updateClocks, 6000);
+  }
 
-    updateTime();
-
-    </script>
-{% endblock %}
-
-{% block content %}
-
-<div class="card"  style="margin:20px; text-align:center;">
-    
-    <div class="card-header">
-    <img style="margin: auto; padding: auto; height:100px; width: 100px;"   class="card-img-top" src={{city.image}} alt="Card image cap">
-      <h5>{{city.city}}</h5>
-      <p style="margin-bottom: 5px;">{{city.country}}</p>
-      <div><span class="clock" style="font-family: sans-serif; margin: 0;" data-timezone='{{city.timezone}}'></span></div>
-    </div>
-    <div class="card-body">
-        <div class="list-group list-group-flush" style="width: 50%; display: block; float: left; margin-top: 20px;">
-            <li class="list-group-item">Current status: {{city.status}}</li>
-            <li class="list-group-item">Temperature: {{city.temp}} °C</li>
-            <li class="list-group-item">Wind speed: {{city.wind}} km/h</li>
-            <li class="list-group-item">Sunrise at {{city.sunrise.hour}}:{{city.sunrise.minute}}, sunset at {{city.sunset.hour}}:{{city.sunset.minute}}</li>
-            <li class="list-group-item">Todays min {{city.tempMin}} °C, todays max {{city.tempMax}} °C </li>
-            <li class="list-group-item">Pressure: {{city.pressure}} hPa</li>
+  updateTime();
+</script>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card m-2 text-center">
+        <div class="card-header">
+          <img
+            style="margin: auto; padding: auto; height: 100px; width: 100px"
+            class="card-img-top"
+            src="{{city.image}}"
+            alt="Card image cap"
+          />
+          <h5>{{city.city}}</h5>
+          <p style="margin-bottom: 5px">{{city.country}}</p>
+          <div>
+            <span
+              class="clock"
+              style="font-family: sans-serif; margin: 0"
+              data-timezone="{{city.timezone}}"
+            ></span>
+          </div>
         </div>
-        <img src="data:image/png;base64,{{url}}" style="width: 550px; height: 400px; float: right;">
-        
-
-      </blockquote>
-      
+        <div class="card-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="list-group list-group-flush m-1">
+                  <li class="list-group-item">
+                    Current status: {{city.status}}
+                  </li>
+                  <li class="list-group-item">Temperature: {{city.temp}} °C</li>
+                  <li class="list-group-item">
+                    Wind speed: {{city.wind}} km/h
+                  </li>
+                  <li class="list-group-item">
+                    Sunrise at {{city.sunrise.hour}}:{{city.sunrise.minute}},
+                    sunset at {{city.sunset.hour}}:{{city.sunset.minute}}
+                  </li>
+                  <li class="list-group-item">
+                    Todays min {{city.tempMin}} °C, todays max {{city.tempMax}}
+                    °C
+                  </li>
+                  <li class="list-group-item">
+                    Pressure: {{city.pressure}} hPa
+                  </li>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <img src="data:image/png;base64,{{url}}" class="img-fluid" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    
+  </div>
 </div>
-  
 
 {% endblock %}
