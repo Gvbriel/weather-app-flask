@@ -132,7 +132,8 @@ class Weather:
         self.lat = geolocator.geocode(self.city + ','+ self.country).latitude
         self.long = geolocator.geocode(self.city + ','+ self.country).longitude
 
-        self.forecastDaily = wthmgr.one_call(self.lat, self.long).forecast_daily
+        self.dailyForecaster = wthmgr.forecast_at_place(self.city + ', ' + self.country, '3h')
+        self.oneCallForecast = wthmgr.one_call(self.lat, self.long).forecast_daily
         self.continent = continentName(self)
         self.continent = checkUS(self.continent)
         self.citySpace = self.city.replace(' ', '_')
@@ -142,10 +143,17 @@ class Weather:
         self.image = setImage(self)
         self.sunrise = self.sunrise.replace(tzinfo=pytz.utc).astimezone(self.zone)
         self.sunset = self.sunset.replace(tzinfo=pytz.utc).astimezone(self.zone)
+
+        self.coldest = self.dailyForecaster.most_cold()
+        self.hottest = self.dailyForecaster.most_hot()
+        self.rainest = self.dailyForecaster.most_rainy()
+        self.snowy = self.dailyForecaster.most_snowy()
+        
+
         self.longTermForecast()
 
     def longTermForecast(self):
-        for weather in self.forecastDaily:
+        for weather in self.oneCallForecast:
             self.forecastTempMax.append(round(float(weather.temperature('celsius').get('max')),1))
             self.forecastTempMin.append(round(float(weather.temperature('celsius').get('min')),1))
             day = datetime.utcfromtimestamp(weather.reference_time())
@@ -171,8 +179,8 @@ citieslist = [Warsaw, Amsterdam, NewYork, Tokyo, Shanghai, BuenosAires, LosAngel
 
 @app.route('/index.html')
 def index():
-    print(Warsaw.forecastTempMin, file = sys.stderr)
-    print(Warsaw.forecastTempMax, file = sys.stderr)
+    print(Warsaw.coldest, file = sys.stderr)
+    print(Warsaw.rainest, file = sys.stderr)
     return render_template("index.html", cities = citieslist)
 
 @app.route('/search.html', methods = ["POST","GET"])
@@ -202,21 +210,23 @@ def city():
 
     plt.clf()
     #plt.xkcd()
-    #make dashed line
-    plt.plot(dates, tempMax, color='b',marker='o', label="Max day temperature")
-    plt.plot(dates, tempMin, color='k',marker='o', label="Min day temperature")
-    plt.ylabel('Temperature')
+    plt.plot(dates, tempMax, color='#1f77b4',marker='.', label="Highest temperature")
+    plt.plot(dates, tempMin, color='#17becf',marker='.', label="Lowest temperature")
+    plt.ylabel('Temperature (Celsius)')
     plt.xlabel('Dates')
     plt.title('7 days forecast')
+    plt.legend()
+
+    plt.grid(b=True, linestyle='dashed')
 
     axes = plt.gca()
     axes.set_ylim([min(tempMin)-5, max(tempMax)+5])
 
     for i,j in zip(dates,tempMin):
-        axes.annotate(str(j),xy=(i,j+1))
+        axes.annotate(str(j),xy=(i,j), xytext=(-13,-15), textcoords='offset points')
 
     for i,j in zip(dates,tempMax):
-        axes.annotate(str(j),xy=(i,j+1))
+        axes.annotate(str(j),xy=(i,j), xytext=(-13,10), textcoords='offset points')
 
     plt.savefig(img, format='png')
     img.seek(0)

@@ -43,17 +43,21 @@
       <div><span class="clock" style="font-family: sans-serif; margin: 0;" data-timezone='{{city.timezone}}'></span></div>
     </div>
     <div class="card-body">
-        <p>Current status: {{city.status}}</p>
-        <p>Temperature: {{city.temp}} °C</p>
-        <p>Wind speed: {{city.wind}} km/h</p>
-        <p>Sunrise at {{city.sunrise.hour}}:{{city.sunrise.minute}}, sunset at {{city.sunset.hour}}:{{city.sunset.minute}}</p>
-        <p>Todays min {{city.tempMin}} °C, todays max {{city.tempMax}} °C </p>
-        <p>Pressure: {{city.pressure}} hPa</p>
-        <img src="data:image/png;base64,{{url}}">
+        <div class="list-group list-group-flush" style="width: 50%; display: block; float: left; margin-top: 20px;">
+            <li class="list-group-item">Current status: {{city.status}}</li>
+            <li class="list-group-item">Temperature: {{city.temp}} °C</li>
+            <li class="list-group-item">Wind speed: {{city.wind}} km/h</li>
+            <li class="list-group-item">Sunrise at {{city.sunrise.hour}}:{{city.sunrise.minute}}, sunset at {{city.sunset.hour}}:{{city.sunset.minute}}</li>
+            <li class="list-group-item">Todays min {{city.tempMin}} °C, todays max {{city.tempMax}} °C </li>
+            <li class="list-group-item">Pressure: {{city.pressure}} hPa</li>
+        </div>
+        <img src="data:image/png;base64,{{url}}" style="width: 550px; height: 400px; float: right;">
+        
 
       </blockquote>
+      
     </div>
-
+    
 </div>
   
 
