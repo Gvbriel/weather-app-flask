@@ -177,13 +177,13 @@ Moscow = Weather('Moscow', 'Russia')
 
 citieslist = [Warsaw, Amsterdam, NewYork, Tokyo, Shanghai, BuenosAires, LosAngeles, Paris, Bangkok, Madrid, Manila, Moscow]
 
-@app.route('/index.html')
+@app.route('/')
 def index():
     print(Warsaw.coldest, file = sys.stderr)
     print(Warsaw.rainest, file = sys.stderr)
     return render_template("index.html", cities = citieslist)
 
-@app.route('/search.html', methods = ["POST","GET"])
+@app.route('/search', methods = ["POST","GET"])
 def search():
     if request.method == "POST":
         cityInput = request.form["cityname"]
@@ -196,7 +196,7 @@ def search():
     else:
         return render_template("search.html", display = False, city = Warsaw)
 
-@app.route('/city.html')
+@app.route('/city')
 def city():
     cityC = request.args.get('city')
     countryC = request.args.get('country')
