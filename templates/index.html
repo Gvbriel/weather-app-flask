@@ -36,13 +36,15 @@ Current weather
 
 {% block content %}
 
-<p style="text-align:center;">Click on card to see details.</p>
-<div class="mx-auto container" style="width: 1200px; margin: 20px;">
+
+<div class="mx-auto container">
+  <p style="text-align:center; margin-top: 10px; opacity: 0.5;">Click on card to see details.</p>
     
-  
+  <div class="row">
     {% for city in cities %}
-    <a href={{url_for('city', city = city.city, country = city.country)}}>
-      <div class="card" style="height: auto; width: 10rem; float: left; margin: 10px; text-align:  center; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
+    <div class="col-md-3 col-xl-2 col-sm-4 col-6 mx-auto">
+    <a href={{url_for('city', city = city.city, country = city.country)}} style="color: inherit;">
+      <div class="card text-center m-2" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
         <img style="margin: auto; padding: auto;"   class="card-img-top" src={{city.image}} alt="Card image cap">
         <div class="card-body" style="text-align:  center;">
           <h5 class="card-title" style="margin: 0;"> {{ city.city }}</h5>
@@ -56,7 +58,9 @@ Current weather
         </ul>
       </div>
     </a>
+  </div>
     {% endfor %}
+  </div>
 </div>
 
 {% endblock %}
