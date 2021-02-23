@@ -1,68 +1,36 @@
-{% extends "base.html" %}
-
-{% block title %}
-Current weather - search
-{% endblock %}
-
-
-{% block script %}
-    <script>
-        
-    const clocks = document.getElementsByClassName("clock");
-    var intervalI;
-
-    function updateClocks() {
-      for (let clock of clocks) {
-        let timezone = clock.dataset.timezone;
-        let time = new Date().toLocaleTimeString("en-US", {
-          hour: '2-digit',
-          minute:'2-digit',
-          timeZone: timezone
-        });
-        clock.textContent = time;
-      }
-    }
-
-    function updateTime() {
-      updateClocks();
-      intervalI = setInterval(updateClocks, 6000);
-    }
-
-    updateTime();
-
-    </script>
-{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %} Search {% endblock %} {% block
+content %}
 <div class="mx-auto container">
-    <form action="#" method="post" style="display:flex;">
-        <label>Insert city name:</label>
-        <br>
-        <input type="text" name="cityname" value="">
-        <br>
-            <label>Insert country:</label>
-            <br>
-            <input type="text" name="countryname" value="">
-            <a href={{url_for('city', city = cityname)}}>
-              <input type="submit" value="search" name="submit">
-            </a>
-    </form>
-    {% if display == True %}
-    <div class="card" style="height: auto; width: 10rem; float: left; margin: 10px; text-align:  center; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
-        <img style="margin: auto; padding: auto;"   class="card-img-top" src={{city.image}} alt="Card image cap">
-        <div class="card-body" style="text-align:  center;">
-          <h5 class="card-title" style="margin: 0;"> {{ city.city }}</h5>
-          <p style="font-size: 12px; margin: 4px;"> {{city.country}}</p>
-          <div><span class="clock" style="font-family: sans-serif; padding: 5px;" data-timezone='{{city.timezone}}'></span></div>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">{{city.status}}</li>
-          <li class="list-group-item">{{city.temp}} °C</li>
-          <li class="list-group-item">Wind: {{city.wind}} km\h</li>
-        </ul>
-      </div>
+  <form action="#" method="post">
+    <div class="form-group">
+      <label>Insert city name:</label>
 
-    {% endif %}
+      <input
+        class="form-control"
+        type="text"
+        name="cityname"
+        value=""
+        required
+      />
+
+      <label>Insert country:</label>
+
+      <input
+        class="form-control"
+        type="text"
+        name="countryname"
+        value=""
+        required
+      />
+      <input
+        type="submit"
+        value="search"
+        name="submit"
+        class="btn btn-primary mb-2 mt-2"
+      />
+    </div>
+  </form>
+  <p>{{mes}}</p>
 </div>
 
 {% endblock %}
