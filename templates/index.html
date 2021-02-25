@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}
+Current weather
+{% endblock %}
+
+{%block script%}
+  <script>
+    
+    const clocks = document.getElementsByClassName("clock");
+    var intervalI;
+
+    function updateClocks() {
+      for (let clock of clocks) {
+        let timezone = clock.dataset.timezone;
+        let time = new Date().toLocaleTimeString("en-US", {
+          hour: '2-digit',
+          minute:'2-digit',
+          timeZone: timezone
+        });
+        clock.textContent = time;
+      }
+    }
+
+    function updateTime() {
+      updateClocks();
+      intervalI = setInterval(updateClocks, 6000);
+    }
+
+    //Update every minute:
+    //setInterval(updateClocks, 6000);
+    
+
+    </script>
+{%endblock%}
+
+
+{% block content %}
+
+
+<div class="mx-auto container">
+  <p style="text-align:center; margin-top: 10px; opacity: 0.5;">Click on card to see details.</p>
+    
+  <div class="row">
+    {% for city in cities %}
+    <div class="col-md-3 col-xl-2 col-sm-4 col-6 mx-auto">
+    <a href={{url_for('city', city = city.city, country = city.country)}} style="color: inherit;">
+      <div class="card text-center m-2" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 14px;">
+        <img style="margin: auto; padding: auto;"   class="card-img-top" src={{city.image}} alt="Card image cap">
+        <div class="card-body" style="text-align:  center;">
+          <h5 class="card-title" style="margin: 0;"> {{ city.city }}</h5>
+          <p style="font-size: 12px; margin: 4px;"> {{city.country}}</p>
+          <div><span class="clock" style="font-family: sans-serif; padding: 5px;" data-timezone='{{city.timezone}}'></span></div>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">{{city.status}}</li>
+          <li class="list-group-item">{{city.temp}} °C</li>
+          <li class="list-group-item">Wind: {{city.wind}} km\h</li>
+        </ul>
+      </div>
+    </a>
+  </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
